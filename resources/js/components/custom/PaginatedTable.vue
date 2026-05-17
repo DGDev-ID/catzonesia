@@ -42,7 +42,7 @@ type Paginator<T> = {
 const props = withDefaults(
     defineProps<{
         headers: TableHeader[];
-        paginator: Paginator<any>;
+        paginator: Paginator<any> | null | undefined;
         emptyText?: string;
     }>(),
     {
@@ -50,15 +50,35 @@ const props = withDefaults(
     },
 );
 
-const hasData = computed(() => (props.paginator?.data?.length ?? 0) > 0);
+const safePaginator = computed<Paginator<any>>(() => {
+    if (!props.paginator) {
+        return { 
+            data: [], 
+            links: [], 
+            meta: { 
+                current_page: 1, 
+                from: null, 
+                last_page: 1, 
+                links: [], 
+                path: '', 
+                per_page: 10, 
+                to: null, 
+                total: 0 
+            } 
+        };
+    }
+    return props.paginator;
+});
+
+const hasData = computed(() => (safePaginator.value.data?.length ?? 0) > 0);
 
 const links = computed(() => {
-    const raw = props.paginator.links ?? props.paginator.meta?.links ?? [];
+    const raw = safePaginator.value.links ?? safePaginator.value.meta?.links ?? [];
     return raw as PaginatorLink[];
 });
 
 const meta = computed<PaginatorMeta>(() => {
-    const p: any = props.paginator ?? {};
+    const p: any = safePaginator.value ?? {};
     const m: any = p.meta ?? p;
 
     return {
@@ -103,7 +123,7 @@ const getCellValue = (item: Record<string, any> | null | undefined, key: string)
                         </td>
                     </tr>
 
-                    <tr v-for="(item, rowIndex) in paginator.data" :key="item?.id ?? rowIndex" class="border-t transition hover:bg-muted/40">
+                    <tr v-for="(item, rowIndex) in safePaginator.data" :key="item?.id ?? rowIndex" class="border-t transition hover:bg-muted/40">
                         <td v-for="header in headers" :key="header.key" class="px-6 py-4 align-top">
                             <slot :name="`cell-${header.key}`" :item="item">
                                 <template v-if="header.key === 'id'">{{ getRowNumber(rowIndex) }}</template>

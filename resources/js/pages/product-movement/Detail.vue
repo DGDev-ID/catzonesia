@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import PaginatedTable from '@/components/custom/PaginatedTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import Heading from '@/components/Heading.vue';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -10,35 +12,37 @@ const props = defineProps<{
     units: any;
 }>();
 
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Product Movement', href: '/product-movement' },
+    { title: props.product.name, href: `/product-movement/${props.product.id}` },
+];
+
 const quantity = ref(0);
 const unitId = ref<number | null>(null);
 const note = ref('');
 
 const headers = [
     { key: 'id', label: 'No' },
-    { key: 'type', label: 'Type' },
-    { key: 'quantity', label: 'Quantity' },
+    { key: 'type', label: 'Tipe' },
+    { key: 'quantity', label: 'Jumlah' },
     { key: 'unit.name', label: 'Unit' },
-    { key: 'price', label: 'Price' },
-    { key: 'note', label: 'Note' },
-    { key: 'created_at', label: 'Date' },
+    { key: 'price', label: 'Harga' },
+    { key: 'note', label: 'Catatan' },
+    { key: 'created_at', label: 'Tanggal' },
 ];
 
 const adjustStock = () => {
     if (quantity.value === 0 || !unitId.value) {
-        alert('Please enter quantity and select unit');
+        alert('Masukkan jumlah dan pilih unit');
         return;
     }
-
-    const type = quantity.value > 0 ? 'adjustment' : 'adjustment';
-    const absQuantity = Math.abs(quantity.value);
 
     router.post(
         '/api/product-movement/adjust',
         {
             product_id: props.product.id,
-            type: type,
-            quantity: absQuantity,
+            type: 'adjustment',
+            quantity: Math.abs(quantity.value),
             unit_id: unitId.value,
             note: note.value,
         },
@@ -55,66 +59,80 @@ const adjustStock = () => {
 <template>
     <Head title="Product Movement" />
 
-    <AppLayout>
-        <div class="container mx-auto py-8">
-            <h1 class="mb-8 text-2xl font-bold">{{ props.product.name }}</h1>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="min-h-screen bg-muted/40 py-10">
+            <div class="max-w-7xl mx-auto px-6 space-y-8">
 
-            <div class="mb-8">
-                <h2 class="mb-4 text-xl font-semibold">Adjust Stock</h2>
-                <div class="flex gap-4">
-                    <div class="flex-1">
-                        <label for="quantity" class="mb-2 block text-sm font-medium text-gray-700">Quantity</label>
-                        <input
-                            id="quantity"
-                            v-model="quantity"
-                            type="number"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                <div class="flex items-center justify-between">
+                    <Heading variant="small" :title="props.product.name" description="Pergerakan stok & penyesuaian." />
+                    <Link href="/product-movement" class="text-sm text-muted-foreground hover:text-foreground transition">
+                        ← Kembali
+                    </Link>
+                </div>
+
+                <!-- Adjust Stock Card -->
+                <div class="rounded-2xl border bg-background shadow-sm p-8">
+                    <h3 class="mb-6 text-base font-semibold">Penyesuaian Stok</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label for="quantity" class="mb-1 block text-sm font-medium">Jumlah</label>
+                            <input
+                                id="quantity"
+                                v-model="quantity"
+                                type="number"
+                                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            />
+                        </div>
+                        <div>
+                            <label for="unit_id" class="mb-1 block text-sm font-medium">Unit</label>
+                            <select
+                                id="unit_id"
+                                v-model="unitId"
+                                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                                <option value="">Pilih Unit</option>
+                                <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="note" class="mb-1 block text-sm font-medium">Catatan</label>
+                            <input
+                                id="note"
+                                v-model="note"
+                                type="text"
+                                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            />
+                        </div>
                     </div>
-
-                    <div class="flex-1">
-                        <label for="unit_id" class="mb-2 block text-sm font-medium text-gray-700">Unit</label>
-                        <select
-                            id="unit_id"
-                            v-model="unitId"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">Select Unit</option>
-                            <option v-for="unit in units" :key="unit.id" :value="unit.id">
-                                {{ unit.name }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="flex-1">
-                        <label for="note" class="mb-2 block text-sm font-medium text-gray-700">Note</label>
-                        <input
-                            id="note"
-                            v-model="note"
-                            type="text"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    <div class="flex items-end">
+                    <div class="mt-4">
                         <button
                             type="button"
                             @click="adjustStock"
-                            class="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
                         >
-                            Adjust Stock
+                            Sesuaikan Stok
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <PaginatedTable :headers="headers" :paginator="movements">
-                <template #cell-type="{ item }">
-                    <span :class="item.type === 'inbound' ? 'text-green-600' : item.type === 'outbound' ? 'text-red-600' : 'text-yellow-600'">
-                        {{ item.type }}
-                    </span>
-                </template>
-            </PaginatedTable>
+                <!-- Movement Table -->
+                <div class="rounded-2xl border bg-background shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-base font-semibold">Riwayat Pergerakan</h3>
+                    </div>
+                    <PaginatedTable :headers="headers" :paginator="movements">
+                        <template #cell-type="{ item }">
+                            <span
+                                :class="item.type === 'inbound' ? 'bg-green-100 text-green-700' : item.type === 'outbound' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'"
+                                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize"
+                            >
+                                {{ item.type }}
+                            </span>
+                        </template>
+                    </PaginatedTable>
+                </div>
+
+            </div>
         </div>
     </AppLayout>
 </template>

@@ -3,70 +3,65 @@ import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+// import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CreditCard, FileText, Folder, LayoutGrid, Package, ShoppingCart, TrendingUp } from 'lucide-vue-next';
+import { BookOpen, CreditCard, FileText, Folder, FolderArchive, History, LayoutGrid, Package, ShoppingCart, TrendingUp } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { Component } from 'vue';
+
+interface NavItem {
+    title: string;
+    url: string;
+    icon: Component;
+}
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        url: '/dashboard',
         icon: LayoutGrid,
     },
+];
+
+const masterNavItems: NavItem[] = [
+
     {
-        title: 'Master',
-        icon: Package,
-        children: [
-            {
-                title: 'Category',
-                href: '/master/category',
-                icon: FileText,
-            },
-            {
-                title: 'Unit',
-                href: '/master/unit',
-                icon: FileText,
-            },
-            {
-                title: 'Product',
-                href: '/master/product',
-                icon: ShoppingCart,
-            },
-            {
-                title: 'Package',
-                href: '/master/package',
-                icon: Package,
-            },
-        ],
+        title: 'Category',
+        url: '/master/category',
+        icon: FileText,
     },
     {
+        title: 'Unit',
+        url: '/master/unit',
+        icon: FolderArchive,
+    },
+    {
+        title: 'Product',
+        url: '/master/product',
+        icon: ShoppingCart,
+    },
+    {
+        title: 'Package',
+        url: '/master/package',
+        icon: Package,
+    },
+];
+
+const transactionNavItems: NavItem[] = [
+    {
         title: 'Product Movement',
-        href: '/product-movement',
+        url: '/product-movement',
         icon: TrendingUp,
     },
     {
         title: 'Transaction',
-        href: '/transaction',
-        icon: FileText,
+        url: '/transaction',
+        icon: History,
     },
     {
         title: 'Cashier',
-        href: '/cashier',
+        url: '/cashier',
         icon: CreditCard,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
     },
 ];
 </script>
@@ -86,11 +81,12 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :title="'Dashboard'" :items="mainNavItems" />
+            <NavMain :title="'Master'" :items="masterNavItems" />
+            <NavMain :title="'Transaction'" :items="transactionNavItems" />
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>

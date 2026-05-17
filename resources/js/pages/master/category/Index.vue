@@ -1,32 +1,28 @@
 <script setup lang="ts">
 import PaginatedTable from '@/components/custom/PaginatedTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import Heading from '@/components/Heading.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { Pencil, Trash2 } from 'lucide-vue-next';
 
 defineProps<{
     categories: any;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Master',
-        href: '/master',
-    },
-    {
-        title: 'Category',
-        href: '/master/category',
-    },
+    { title: 'Master', href: '/master' },
+    { title: 'Category', href: '/master/category' },
 ];
 
 const headers = [
     { key: 'id', label: 'No' },
-    { key: 'name', label: 'Name' },
-    { key: 'actions', label: 'Actions' },
+    { key: 'name', label: 'Nama Kategori' },
+    { key: 'actions', label: 'Aksi' },
 ];
 
 const deleteCategory = (id: number) => {
-    if (confirm('Are you sure you want to delete this category?')) {
+    if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
         router.delete(`/api/master/category/${id}`);
     }
 };
@@ -36,20 +32,46 @@ const deleteCategory = (id: number) => {
     <Head title="Category" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col gap-4">
-            <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold">Category Management</h1>
-                <Link href="/master/category/create" class="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"> Add Category </Link>
-            </div>
+        <div class="min-h-screen bg-muted/40 py-10">
+            <div class="max-w-7xl mx-auto px-6 space-y-8">
 
-            <PaginatedTable :headers="headers" :paginator="categories">
-                <template #cell-actions="{ item }">
-                    <div class="flex gap-2">
-                        <Link href="/master/category/edit/:id" :params="{ id: item.id }" class="text-blue-500 hover:underline"> Edit </Link>
-                        <button @click="deleteCategory(item.id)" class="text-red-500 hover:underline">Delete</button>
-                    </div>
-                </template>
-            </PaginatedTable>
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <Heading variant="small" title="Master Category" description="Kelola daftar kategori produk." />
+                    <Link
+                        href="/master/category/create"
+                        class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+                    >
+                        Tambah Category
+                    </Link>
+                </div>
+
+                <!-- Table Card -->
+                <div class="rounded-2xl border bg-background shadow-sm overflow-hidden">
+                    <PaginatedTable :headers="headers" :paginator="categories">
+                        <template #cell-actions="{ item }">
+                            <div class="flex justify-end items-center gap-3">
+                                <Link
+                                    :href="`/master/category/edit/${item.id}`"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-yellow-100 text-yellow-600 hover:bg-yellow-500 hover:text-white transition"
+                                    title="Edit Category"
+                                >
+                                    <Pencil :size="16" />
+                                </Link>
+                                <button
+                                    @click="deleteCategory(item.id)"
+                                    type="button"
+                                    class="cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-md bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition"
+                                    title="Hapus Category"
+                                >
+                                    <Trash2 :size="16" />
+                                </button>
+                            </div>
+                        </template>
+                    </PaginatedTable>
+                </div>
+
+            </div>
         </div>
     </AppLayout>
 </template>

@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import Heading from '@/components/Heading.vue';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
     package: any;
 }>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Master', href: '/master' },
+    { title: 'Package', href: '/master/package' },
+    { title: 'Edit', href: `/master/package/edit/${props.package.id}` },
+];
 
 const name = ref('');
 const price = ref(0);
@@ -41,61 +49,80 @@ const submit = () => {
 <template>
     <Head title="Edit Package" />
 
-    <AppLayout>
-        <div class="container mx-auto py-8">
-            <h1 class="mb-8 text-2xl font-bold">Edit Package</h1>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="min-h-screen bg-muted/40 py-10">
+            <div class="max-w-7xl mx-auto px-6 space-y-8">
 
-            <div class="max-w-md">
-                <div class="mb-4">
-                    <label for="name" class="mb-2 block text-sm font-medium text-gray-700">Name</label>
-                    <input
-                        id="name"
-                        v-model="name"
-                        type="text"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                <div class="flex items-center justify-between">
+                    <Heading variant="small" title="Edit Package" description="Perbarui data paket layanan yang sudah ada." />
+                    <Link href="/master/package" class="text-sm text-muted-foreground hover:text-foreground transition">
+                        ← Kembali
+                    </Link>
                 </div>
 
-                <div class="mb-4">
-                    <label for="price" class="mb-2 block text-sm font-medium text-gray-700">Price</label>
-                    <input
-                        id="price"
-                        v-model="price"
-                        type="number"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                <div class="rounded-2xl border bg-background shadow-sm p-8 max-w-lg">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label for="name" class="mb-2 block text-sm font-medium">Nama Paket</label>
+                            <input
+                                id="name"
+                                v-model="name"
+                                type="text"
+                                placeholder="Masukkan nama paket"
+                                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            />
+                        </div>
+
+                        <div>
+                            <label for="price" class="mb-2 block text-sm font-medium">Harga</label>
+                            <input
+                                id="price"
+                                v-model="price"
+                                type="number"
+                                placeholder="Masukkan harga"
+                                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            />
+                        </div>
+
+                        <div>
+                            <label for="description" class="mb-2 block text-sm font-medium">Deskripsi</label>
+                            <textarea
+                                id="description"
+                                v-model="description"
+                                rows="3"
+                                placeholder="Masukkan deskripsi paket"
+                                class="flex w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            ></textarea>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <input
+                                id="is_grooming"
+                                v-model="isGrooming"
+                                type="checkbox"
+                                class="h-4 w-4 rounded border-input text-primary focus:ring-ring"
+                            />
+                            <label for="is_grooming" class="text-sm font-medium">Paket Grooming</label>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex gap-3">
+                        <button
+                            type="button"
+                            @click="submit"
+                            class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+                        >
+                            Update Package
+                        </button>
+                        <Link
+                            href="/master/package"
+                            class="inline-flex items-center justify-center rounded-xl border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition hover:bg-muted"
+                        >
+                            Batal
+                        </Link>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label for="is_grooming" class="mb-2 block text-sm font-medium text-gray-700">Is Grooming</label>
-                    <input id="is_grooming" v-model="isGrooming" type="checkbox" class="h-4 w-4 rounded text-blue-600 focus:ring-blue-500" />
-                </div>
-
-                <div class="mb-4">
-                    <label for="description" class="mb-2 block text-sm font-medium text-gray-700">Description</label>
-                    <textarea
-                        id="description"
-                        v-model="description"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    ></textarea>
-                </div>
-
-                <div class="flex gap-4">
-                    <button
-                        type="button"
-                        @click="submit"
-                        class="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        Update Package
-                    </button>
-                    <button
-                        type="button"
-                        @click="router.get('/master/package')"
-                        class="rounded-md bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                    >
-                        Cancel
-                    </button>
-                </div>
             </div>
         </div>
     </AppLayout>
