@@ -10,7 +10,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $table = 'transactions';
-    protected $fillable = ['price', 'fee', 'total_price', 'status'];
+    protected $fillable = ['cust_email', 'price', 'fee', 'total_price', 'status', 'profit_margin'];
 
     // Relationships
     public function productMovements()

@@ -10,10 +10,12 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('cust_email')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('fee', 10, 2);
             $table->decimal('total_price', 10, 2);
             $table->string('status');
+            $table->decimal('profit_margin', 10, 2)->nullable();
             $table->timestamps();
         });
     }

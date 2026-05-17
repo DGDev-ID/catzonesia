@@ -1,0 +1,145 @@
+<?php
+
+namespace App\Http\Controllers\Master;
+
+use App\Http\Controllers\Controller;
+use App\Models\MCategory;
+use App\Models\MProduct;
+use App\Models\MUnit;
+use App\Models\ProductCategory;
+use App\Models\ProductUnitConverter;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class ProductController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified']);
+    }
+
+    public function index(Request $request)
+    {
+        $products = MProduct::query()
+            ->when($request->query('search'), function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+            })
+            ->paginate(10);
+
+        return Inertia::render('master/product/Index', [
+            'products' => $products,
+        ]);
+    }
+
+    public function create()
+    {
+        $categories = MCategory::all();
+        $units = MUnit::all();
+
+        return Inertia::render('master/product/Store', [
+            'categories' => $categories,
+            'units' => $units,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'base_unit_id' => 'required|exists:m_units,id',
+            'name' => 'required|string|max:255',
+            'sku' => 'required|string|max:255|unique:m_products,sku',
+            'price' => 'required|numeric|min:0',
+            'avg_inbound_price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'stock_alert' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'img_url' => 'nullable|string',
+            'is_display' => 'required|boolean',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:m_categories,id',
+            'unit_converters' => 'nullable|array',
+            'unit_converters.*.unit_id' => 'required|exists:m_units,id',
+            'unit_converters.*.multiplier' => 'required|numeric|min:0',
+        ]);
+
+        $product = MProduct::create($validated);
+
+        foreach ($validated['categories'] as $categoryId) {
+            ProductCategory::create([
+                'product_id' => $product->id,
+                'category_id' => $categoryId,
+            ]);
+        }
+
+        if (isset($validated['unit_converters'])) {
+            foreach ($validated['unit_converters'] as $converter) {
+                ProductUnitConverter::create([
+                    'product_id' => $product->id,
+                    'unit_id' => $converter['unit_id'],
+                    'multiplier' => $converter['multiplier'],
+                ]);
+            }
+        }
+
+        return redirect()->route('master.product.index')->with('success', 'Produk berhasil ditambahkan');
+    }
+
+    public function edit(MProduct $product)
+    {
+        $categories = MCategory::all();
+        $units = MUnit::all();
+        $product->load('categories', 'productUnitConverters');
+
+        return Inertia::render('master/product/Edit', [
+            'product' => $product,
+            'categories' => $categories,
+            'units' => $units,
+        ]);
+    }
+
+    public function update(Request $request, MProduct $product)
+    {
+        $validated = $request->validate([
+            'base_unit_id' => 'required|exists:m_units,id',
+            'name' => 'required|string|max:255',
+            'sku' => 'required|string|max:255|unique:m_products,sku,' . $product->id,
+            'price' => 'required|numeric|min:0',
+            'avg_inbound_price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'stock_alert' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'img_url' => 'nullable|string',
+            'is_display' => 'required|boolean',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:m_categories,id',
+            'unit_converters' => 'nullable|array',
+            'unit_converters.*.unit_id' => 'required|exists:m_units,id',
+            'unit_converters.*.multiplier' => 'required|numeric|min:0',
+        ]);
+
+        $product->update($validated);
+
+        $product->categories()->sync($validated['categories']);
+
+        ProductUnitConverter::where('product_id', $product->id)->delete();
+        if (isset($validated['unit_converters'])) {
+            foreach ($validated['unit_converters'] as $converter) {
+                ProductUnitConverter::create([
+                    'product_id' => $product->id,
+                    'unit_id' => $converter['unit_id'],
+                    'multiplier' => $converter['multiplier'],
+                ]);
+            }
+        }
+
+        return redirect()->route('master.product.index')->with('success', 'Produk berhasil diupdate');
+    }
+
+    public function destroy(MProduct $product)
+    {
+        $product->delete();
+
+        return redirect()->route('master.product.index')->with('success', 'Produk berhasil dihapus');
+    }
+}
