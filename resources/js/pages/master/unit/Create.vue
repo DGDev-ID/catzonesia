@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import Heading from '@/components/Heading.vue';
+import UnitForm from '@/components/custom/form/UnitForm.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Master', href: '/master' },
@@ -11,14 +11,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Create', href: '/master/unit/create' },
 ];
 
-const name = ref('');
-
-const handleSubmit = () => {
-    if (!name.value.trim()) {
-        alert('Please enter a unit name');
-        return;
-    }
-    router.post('/api/master/unit', { name: name.value.trim() });
+const submit = (data: { name: string }) => {
+    router.post('/master/unit', data, { preserveScroll: true });
 };
 </script>
 
@@ -36,34 +30,7 @@ const handleSubmit = () => {
                     </Link>
                 </div>
 
-                <div class="rounded-2xl border bg-background shadow-sm p-8 max-w-md">
-                    <div class="mb-6">
-                        <label for="name" class="mb-2 block text-sm font-medium">Nama Unit</label>
-                        <input
-                            id="name"
-                            v-model="name"
-                            type="text"
-                            placeholder="Masukkan nama unit"
-                            class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        />
-                    </div>
-
-                    <div class="flex gap-3">
-                        <button
-                            type="button"
-                            @click="handleSubmit"
-                            class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
-                        >
-                            Simpan Unit
-                        </button>
-                        <Link
-                            href="/master/unit"
-                            class="inline-flex items-center justify-center rounded-xl border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition hover:bg-muted"
-                        >
-                            Batal
-                        </Link>
-                    </div>
-                </div>
+                <UnitForm submit-label="Simpan Unit" @submit="submit" />
 
             </div>
         </div>

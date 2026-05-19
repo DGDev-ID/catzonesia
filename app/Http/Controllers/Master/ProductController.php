@@ -37,7 +37,7 @@ class ProductController extends Controller
         $categories = MCategory::all();
         $units = MUnit::all();
 
-        return Inertia::render('master/product/Store', [
+        return Inertia::render('master/product/Create', [
             'categories' => $categories,
             'units' => $units,
         ]);

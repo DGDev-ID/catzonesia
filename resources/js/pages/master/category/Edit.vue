@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import Heading from '@/components/Heading.vue';
+import CategoryForm from '@/components/custom/form/CategoryForm.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
 const props = defineProps<{
     category: any;
@@ -13,22 +13,11 @@ const props = defineProps<{
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Master', href: '/master' },
     { title: 'Category', href: '/master/category' },
-    { title: 'Edit', href: `/master/category/edit/${props.category.id}` },
+    { title: 'Edit', href: `/master/category/${props.category.id}/edit` },
 ];
 
-const name = ref(props.category.name);
-
-const submit = () => {
-    router.put(
-        `/api/master/category/${props.category.id}`,
-        { name: name.value },
-        {
-            preserveScroll: true,
-            onSuccess: () => {
-                router.get('/master/category');
-            },
-        },
-    );
+const submit = (data: { name: string }) => {
+    router.put(`/master/category/${props.category.id}`, data, { preserveScroll: true });
 };
 </script>
 
@@ -46,35 +35,12 @@ const submit = () => {
                     </Link>
                 </div>
 
-                <div class="rounded-2xl border bg-background shadow-sm p-8 max-w-md">
-                    <div class="mb-6">
-                        <label for="name" class="mb-2 block text-sm font-medium">Nama Kategori</label>
-                        <input
-                            id="name"
-                            v-model="name"
-                            type="text"
-                            placeholder="Masukkan nama kategori"
-                            class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        />
-                        <div v-if="errors?.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</div>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <button
-                            type="button"
-                            @click="submit"
-                            class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
-                        >
-                            Update Category
-                        </button>
-                        <Link
-                            href="/master/category"
-                            class="inline-flex items-center justify-center rounded-xl border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition hover:bg-muted"
-                        >
-                            Batal
-                        </Link>
-                    </div>
-                </div>
+                <CategoryForm
+                    :initial-name="category.name"
+                    submit-label="Update Category"
+                    :errors="errors"
+                    @submit="submit"
+                />
 
             </div>
         </div>

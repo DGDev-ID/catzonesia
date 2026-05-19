@@ -53,9 +53,9 @@ const handleDelete = (id: number) => {
                 <div class="rounded-2xl border bg-background shadow-sm overflow-hidden">
                     <PaginatedTable :headers="headers" :paginator="products">
                         <template #cell-actions="{ item }">
-                            <div class="flex justify-end items-center gap-3">
+                            <div class="flex justify-start items-center gap-3">
                                 <Link
-                                    :href="`/products/edit/${item.id}`"
+                                    :href="route('master.product.edit', item.id)"
                                     class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-yellow-100 text-yellow-600 hover:bg-yellow-500 hover:text-white transition"
                                     title="Edit Product"
                                 >

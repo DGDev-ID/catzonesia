@@ -27,6 +27,11 @@ class CategoryController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return Inertia::render('master/category/Create');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -36,6 +41,13 @@ class CategoryController extends Controller
         MCategory::create($validated);
 
         return redirect()->route('master.category.index')->with('success', 'Kategori berhasil ditambahkan');
+    }
+
+    public function edit(MCategory $category)
+    {
+        return Inertia::render('master/category/Edit', [
+            'category' => $category,
+        ]);
     }
 
     public function update(Request $request, MCategory $category)

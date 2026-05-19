@@ -65,7 +65,7 @@ const downloadExcel = () => {
                     <button
                         type="button"
                         @click="downloadExcel"
-                        class="inline-flex items-center gap-2 justify-center rounded-xl bg-green-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-green-700"
+                        class="inline-flex items-center gap-2 justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
                     >
                         <Download :size="16" />
                         Download Excel

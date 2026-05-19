@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
+
+const props = withDefaults(defineProps<{
+    initialName?: string;
+    submitLabel?: string;
+    backUrl?: string;
+    errors?: Record<string, string[]>;
+}>(), {
+    initialName: '',
+    submitLabel: 'Simpan',
+    backUrl: '/master/category',
+});
+
+const emit = defineEmits<{
+    submit: [data: { name: string }];
+}>();
+
+const name = ref(props.initialName);
+
+const handleSubmit = () => {
+    emit('submit', { name: name.value });
+};
+</script>
+
+<template>
+    <div class="rounded-2xl border bg-background shadow-sm p-8">
+        <div class="mb-6">
+            <label for="cat-name" class="mb-2 block text-sm font-medium">Nama Kategori</label>
+            <input
+                id="cat-name"
+                v-model="name"
+                type="text"
+                placeholder="Masukkan nama kategori"
+                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            />
+            <div v-if="errors?.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</div>
+        </div>
+        <div class="flex gap-3 justify-end">
+            <button
+                type="button"
+                @click="handleSubmit"
+                class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+            >
+                {{ submitLabel }}
+            </button>
+            <Link
+                :href="backUrl"
+                class="inline-flex items-center justify-center rounded-xl border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition hover:bg-muted"
+            >
+                Batal
+            </Link>
+        </div>
+    </div>
+</template>

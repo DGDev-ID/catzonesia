@@ -27,6 +27,11 @@ class UnitController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return Inertia::render('master/unit/Create');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -36,6 +41,13 @@ class UnitController extends Controller
         MUnit::create($validated);
 
         return redirect()->route('master.unit.index')->with('success', 'Satuan berhasil ditambahkan');
+    }
+
+    public function edit(MUnit $unit)
+    {
+        return Inertia::render('master/unit/Edit', [
+            'unit' => $unit,
+        ]);
     }
 
     public function update(Request $request, MUnit $unit)

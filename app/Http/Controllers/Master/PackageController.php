@@ -33,7 +33,7 @@ class PackageController extends Controller
     {
         $products = MProduct::all();
 
-        return Inertia::render('master/package/Store', [
+        return Inertia::render('master/package/Create', [
             'products' => $products,
         ]);
     }

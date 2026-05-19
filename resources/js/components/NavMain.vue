@@ -23,7 +23,7 @@ const page = usePage<SharedData>();
         <SidebarGroupLabel>{{ title }}</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton as-child :is-active="item.url === page.url">
+                <SidebarMenuButton as-child :is-active="page.url.startsWith(item.url)">
                     <Link :href="item.url">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>
