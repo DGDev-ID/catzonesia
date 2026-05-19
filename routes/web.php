@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CashierController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Master\CategoryController;
 use App\Http\Controllers\Master\PackageController;
 use App\Http\Controllers\Master\ProductController;
@@ -16,9 +17,7 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', DashboardController::class)->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::prefix('master')->name('master.')->group(function () {
