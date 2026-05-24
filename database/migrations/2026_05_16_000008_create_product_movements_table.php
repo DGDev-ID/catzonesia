@@ -11,8 +11,10 @@ return new class extends Migration
         Schema::create('product_movements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('m_products');
-            $table->enum('type', ['inbound', 'outbound', 'adjustment']);
+            $table->enum('type', ['inbound', 'outbound']);
+            $table->decimal('opening_stock', 10, 2)->nullable();
             $table->integer('quantity');
+            $table->decimal('closing_stock', 10, 2)->nullable();
             $table->foreignId('unit_id')->constrained('m_units');
             $table->foreignId('transaction_id')->nullable()->constrained('transactions');
             $table->text('note')->nullable();

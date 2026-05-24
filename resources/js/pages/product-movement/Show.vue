@@ -4,12 +4,11 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import Heading from '@/components/Heading.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
     product: any;
     movements: any;
-    units: any;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -17,34 +16,63 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: props.product.name, href: `/product-movement/${props.product.id}` },
 ];
 
-const quantity = ref(0);
-const unitId = ref<number | null>(null);
+const movementType = ref<'inbound' | 'outbound'>('inbound');
+const quantity = ref<number>(0);
+const unitId = ref<number | null>(props.product?.base_unit_id ?? null);
+const price = ref<number | null>(null);
 const note = ref('');
 
 const headers = [
     { key: 'id', label: 'No' },
     { key: 'type', label: 'Tipe' },
+    { key: 'opening_stock', label: 'Stok Awal' },
     { key: 'quantity', label: 'Jumlah' },
-    { key: 'unit.name', label: 'Unit' },
+    { key: 'unit.name', label: 'Satuan' },
+    { key: 'closing_stock', label: 'Stok Akhir' },
     { key: 'price', label: 'Harga' },
-    { key: 'note', label: 'Catatan' },
     { key: 'created_at', label: 'Tanggal' },
+    { key: 'note', label: 'Catatan' },
 ];
 
+const availableUnits = computed(() => {
+    const units: any[] = [];
+
+    if (props.product?.base_unit) {
+        units.push(props.product.base_unit);
+    }
+
+    const converters = props.product?.product_unit_converters ?? [];
+    for (const conv of converters) {
+        if (conv?.unit_from && !units.some((u) => u.id === conv.unit_from.id)) {
+            units.push(conv.unit_from);
+        }
+        if (conv?.unit_to && !units.some((u) => u.id === conv.unit_to.id)) {
+            units.push(conv.unit_to);
+        }
+    }
+
+    return units;
+});
+
 const adjustStock = () => {
-    if (quantity.value === 0 || !unitId.value) {
+    if (!movementType.value || quantity.value <= 0 || !unitId.value) {
         alert('Masukkan jumlah dan pilih unit');
         return;
     }
 
+    if (movementType.value === 'inbound' && (price.value === null || Number.isNaN(price.value))) {
+        alert('Masukkan harga untuk inbound');
+        return;
+    }
+
     router.post(
-        '/api/product-movement/adjust',
+        route('product-movement.adjustment', props.product.id),
         {
-            product_id: props.product.id,
-            type: 'adjustment',
-            quantity: Math.abs(quantity.value),
+            type: movementType.value,
+            quantity: quantity.value,
             unit_id: unitId.value,
             note: note.value,
+            price: movementType.value === 'inbound' ? price.value : null,
         },
         {
             preserveScroll: true,
@@ -70,16 +98,59 @@ const adjustStock = () => {
                     </Link>
                 </div>
 
+                <div class="rounded-2xl border bg-background shadow-sm p-8">
+                    <h3 class="mb-6 text-base font-semibold">Data Produk</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div v-if="props.product.img_url" class="md:col-span-1">
+                            <div class="overflow-hidden rounded-xl border bg-muted/30">
+                                <img :src="props.product.img_url" alt="Gambar Produk" class="h-48 w-full object-contain bg-background" />
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-xs text-muted-foreground">Nama</div>
+                                <div class="font-medium">{{ props.product.name }}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-muted-foreground">SKU</div>
+                                <div class="font-medium">{{ props.product.sku }}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-muted-foreground">Stok</div>
+                                <div class="font-medium">{{ props.product.stock }} {{ props.product.base_unit?.name ?? '' }}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-muted-foreground">Stok Alert</div>
+                                <div class="font-medium">{{ props.product.stock_alert }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Adjust Stock Card -->
                 <div class="rounded-2xl border bg-background shadow-sm p-8">
                     <h3 class="mb-6 text-base font-semibold">Penyesuaian Stok</h3>
-                    <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label for="movement_type" class="mb-1 block text-sm font-medium">Tipe</label>
+                            <select
+                                id="movement_type"
+                                v-model="movementType"
+                                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                                <option value="inbound">Inbound</option>
+                                <option value="outbound">Outbound</option>
+                            </select>
+                        </div>
                         <div>
                             <label for="quantity" class="mb-1 block text-sm font-medium">Jumlah</label>
                             <input
                                 id="quantity"
                                 v-model="quantity"
                                 type="number"
+                                min="1"
                                 class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             />
                         </div>
@@ -90,9 +161,20 @@ const adjustStock = () => {
                                 v-model="unitId"
                                 class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
-                                <option value="">Pilih Unit</option>
-                                <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
+                                <option :value="null" disabled>Pilih Unit</option>
+                                <option v-for="unit in availableUnits" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
                             </select>
+                        </div>
+                        <div v-if="movementType === 'inbound'">
+                            <label for="price" class="mb-1 block text-sm font-medium">Harga</label>
+                            <input
+                                id="price"
+                                v-model="price"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            />
                         </div>
                         <div>
                             <label for="note" class="mb-1 block text-sm font-medium">Catatan</label>
@@ -100,6 +182,7 @@ const adjustStock = () => {
                                 id="note"
                                 v-model="note"
                                 type="text"
+                                placeholder="Opsional"
                                 class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             />
                         </div>
@@ -118,7 +201,7 @@ const adjustStock = () => {
                 <!-- Movement Table -->
                 <div class="rounded-2xl border bg-background shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b">
-                        <h3 class="text-base font-semibold">Riwayat Pergerakan</h3>
+                        <h3 class="text-base font-semibold">Mutasi Stok</h3>
                     </div>
                     <PaginatedTable :headers="headers" :paginator="movements">
                         <template #cell-type="{ item }">

@@ -97,6 +97,30 @@ const getRowNumber = (rowIndex: number) => {
     return (meta.value.from ?? 1) + rowIndex;
 };
 
+const formatIsoDateToGmtPlus7 = (value: string) => {
+    const match = value.match(
+        /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/,
+    );
+
+    if (!match) return value;
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+
+    const formatted = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    }).format(date);
+
+    return `${formatted} GMT+7`;
+};
+
 const getCellValue = (item: Record<string, any> | null | undefined, key: string) => {
     if (!item) return '';
 
@@ -110,6 +134,10 @@ const getCellValue = (item: Record<string, any> | null | undefined, key: string)
         } else {
             return '';
         }
+    }
+
+    if (typeof value === 'string') {
+        return formatIsoDateToGmtPlus7(value);
     }
 
     return value;

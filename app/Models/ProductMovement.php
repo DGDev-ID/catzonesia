@@ -11,7 +11,7 @@ class ProductMovement extends Model
 
     protected $table = 'product_movements';
     protected $fillable = [
-        'product_id', 'type', 'quantity', 'unit_id', 
+        'product_id', 'type', 'opening_stock', 'quantity', 'unit_id', 'closing_stock',
         'transaction_id', 'note', 'price'
     ];
 

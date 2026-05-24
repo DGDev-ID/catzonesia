@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::resource('product-movement', ProductMovementController::class)->except(['create', 'edit']);
-    Route::post('product-movement/{id}/adjustment', [ProductMovementController::class, 'adjustment'])->name('product-movement.adjustment');
+    Route::post('product-movement/{product}/adjustment', [ProductMovementController::class, 'adjustment'])->name('product-movement.adjustment');
 
     Route::resource('transaction', TransactionController::class)->except(['edit']);
     Route::post('transaction/{id}/success', [TransactionController::class, 'markAsSuccess'])->name('transaction.markAsSuccess');
