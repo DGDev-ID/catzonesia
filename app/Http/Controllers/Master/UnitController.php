@@ -39,8 +39,8 @@ class UnitController extends Controller
         ]);
 
         MUnit::create($validated);
-
-        return redirect()->route('master.unit.index')->with('success', 'Satuan berhasil ditambahkan');
+        toast('Satuan berhasil ditambahkan');
+        return redirect()->route('master.unit.index');
     }
 
     public function edit(MUnit $unit)
@@ -57,14 +57,14 @@ class UnitController extends Controller
         ]);
 
         $unit->update($validated);
-
-        return redirect()->route('master.unit.index')->with('success', 'Satuan berhasil diupdate');
+        toast('Satuan berhasil diupdate');
+        return redirect()->route('master.unit.index');
     }
 
     public function destroy(MUnit $unit)
     {
         $unit->delete();
-
-        return redirect()->route('master.unit.index')->with('success', 'Satuan berhasil dihapus');
+        toast('Satuan berhasil dihapus');
+        return redirect()->route('master.unit.index');
     }
 }

@@ -58,7 +58,8 @@ class PackageController extends Controller
             ]);
         }
 
-        return redirect()->route('master.package.index')->with('success', 'Paket berhasil ditambahkan');
+        toast('Paket berhasil ditambahkan');
+        return redirect()->route('master.package.index');
     }
 
     public function edit(MPackage $package)
@@ -86,14 +87,14 @@ class PackageController extends Controller
         $package->update($validated);
 
         $package->products()->sync($validated['products']);
-
-        return redirect()->route('master.package.index')->with('success', 'Paket berhasil diupdate');
+        toast('Paket berhasil diupdate');
+        return redirect()->route('master.package.index');
     }
 
     public function destroy(MPackage $package)
     {
         $package->delete();
-
-        return redirect()->route('master.package.index')->with('success', 'Paket berhasil dihapus');
+        toast('Paket berhasil dihapus');
+        return redirect()->route('master.package.index');
     }
 }

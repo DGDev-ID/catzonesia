@@ -39,8 +39,8 @@ class RoleController extends Controller
         $role = Role::create(['name' => $validated['name']]);
         $role->syncPermissions($validated['permissions'] ?? []);
 
-        return redirect()->route('user-management.role.index')
-            ->with('success', 'Role berhasil ditambahkan');
+        toast('Role berhasil ditambahkan');
+        return redirect()->route('user-management.role.index');
     }
 
     public function edit(Role $role)
@@ -65,16 +65,15 @@ class RoleController extends Controller
         $role->update(['name' => $validated['name']]);
         $role->syncPermissions($validated['permissions'] ?? []);
 
-        return redirect()->route('user-management.role.index')
-            ->with('success', 'Role berhasil diupdate');
+        toast('Role berhasil diupdate');
+        return redirect()->route('user-management.role.index');
     }
 
     public function destroy(Role $role)
     {
         $role->delete();
-
-        return redirect()->route('user-management.role.index')
-            ->with('success', 'Role berhasil dihapus');
+        toast('Role berhasil dihapus');
+        return redirect()->route('user-management.role.index');
     }
 
     private function groupedPermissions(): array

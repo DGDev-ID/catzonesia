@@ -6,6 +6,8 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { initializeTheme } from './composables/useAppearance';
+import ToastPlugin from '@erag/inertia-toast-vue';
+import '@erag/inertia-toast-vue/style.css';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -28,6 +30,9 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
+            .use(ToastPlugin, {
+                position: 'bottom-right',
+            })
             .use(ZiggyVue)
             .mount(el);
     },

@@ -38,6 +38,7 @@ class PasswordController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        toast('Password berhasil diupdate');
         return back();
     }
 }

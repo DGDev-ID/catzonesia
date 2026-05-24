@@ -82,7 +82,8 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('master.product.index')->with('success', 'Produk berhasil ditambahkan');
+        toast('Produk berhasil ditambahkan');
+        return redirect()->route('master.product.index');
     }
 
     public function edit(MProduct $product)
@@ -133,13 +134,14 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('master.product.index')->with('success', 'Produk berhasil diupdate');
+        toast('Produk berhasil diupdate');
+        return redirect()->route('master.product.index');
     }
 
     public function destroy(MProduct $product)
     {
         $product->delete();
-
-        return redirect()->route('master.product.index')->with('success', 'Produk berhasil dihapus');
+        toast('Produk berhasil dihapus');
+        return redirect()->route('master.product.index');
     }
 }

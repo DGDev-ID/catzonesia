@@ -39,8 +39,8 @@ class CategoryController extends Controller
         ]);
 
         MCategory::create($validated);
-
-        return redirect()->route('master.category.index')->with('success', 'Kategori berhasil ditambahkan');
+        toast('Kategori berhasil ditambahkan');
+        return redirect()->route('master.category.index');
     }
 
     public function edit(MCategory $category)
@@ -57,14 +57,14 @@ class CategoryController extends Controller
         ]);
 
         $category->update($validated);
-
-        return redirect()->route('master.category.index')->with('success', 'Kategori berhasil diupdate');
+        toast('Kategori berhasil diupdate');
+        return redirect()->route('master.category.index');
     }
 
     public function destroy(MCategory $category)
     {
         $category->delete();
-
-        return redirect()->route('master.category.index')->with('success', 'Kategori berhasil dihapus');
+        toast('Kategori berhasil dihapus');
+        return redirect()->route('master.category.index');
     }
 }

@@ -37,6 +37,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
+        toast('Profil berhasil diupdate');
         return to_route('profile.edit');
     }
 

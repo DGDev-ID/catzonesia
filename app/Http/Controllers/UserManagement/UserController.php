@@ -49,8 +49,8 @@ class UserController extends Controller
         $role = Role::findById($validated['role_id']);
         $user->assignRole($role);
 
-        return redirect()->route('user-management.user.index')
-            ->with('success', 'User berhasil ditambahkan');
+        toast('User berhasil ditambahkan');
+        return redirect()->route('user-management.user.index');
     }
 
     public function edit(User $user)
@@ -86,16 +86,14 @@ class UserController extends Controller
 
         $role = Role::findById($validated['role_id']);
         $user->syncRoles([$role]);
-
-        return redirect()->route('user-management.user.index')
-            ->with('success', 'User berhasil diupdate');
+        toast('User berhasil diupdate');
+        return redirect()->route('user-management.user.index');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-
-        return redirect()->route('user-management.user.index')
-            ->with('success', 'User berhasil dihapus');
+        toast('User berhasil dihapus');
+        return redirect()->route('user-management.user.index');
     }
 }
