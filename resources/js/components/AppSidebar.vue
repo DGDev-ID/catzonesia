@@ -67,17 +67,17 @@ const transactionNavItems: NavItem[] = [
         permission: 'product-movement.view',
     },
     {
-        title: 'Transaction',
-        url: '/transaction',
-        icon: History,
-        permission: 'transaction.view',
-    },
-    {
         title: 'Cashier',
         url: '/cashier',
         icon: CreditCard,
         permission: 'cashier.view',
     },
+    {
+        title: 'Transaction',
+        url: '/transaction',
+        icon: History,
+        permission: 'transaction.view',
+    }
 ];
 
 const userManagementNavItems: NavItem[] = [
