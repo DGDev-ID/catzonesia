@@ -214,16 +214,10 @@ const handleSubmit = () => {
             <div class="mt-8 flex gap-3">
                 <button
                     type="submit"
-                    class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+                    class="w-full inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
                 >
                     {{ submitLabel }}
                 </button>
-                <Link
-                    :href="backUrl"
-                    class="inline-flex items-center justify-center rounded-xl border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition hover:bg-muted"
-                >
-                    Batal
-                </Link>
             </div>
         </form>
     </div>

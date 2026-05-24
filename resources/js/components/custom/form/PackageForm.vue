@@ -50,30 +50,81 @@ const availableUnits = computed(() => {
     if (!selectedProductId.value) {
         return [];
     }
-    
-    const selectedProduct = props.products.find(p => p.id === selectedProductId.value);
-    if (!selectedProduct || !selectedProduct.productUnitConverters) {
+
+    const selectedProduct = props.products.find(
+        p => p.id === selectedProductId.value
+    );
+
+    if (!selectedProduct) {
         return [];
     }
-    
-    return selectedProduct.productUnitConverters.map(converter => converter.unit);
+
+    const units: any[] = [];
+
+    // base_unit
+    if (selectedProduct.base_unit) {
+        units.push(selectedProduct.base_unit);
+    }
+
+    // product_unit_converters
+    if (selectedProduct.product_unit_converters) {
+        selectedProduct.product_unit_converters.forEach((converter: any) => {
+
+            // unit_from
+            if (
+                converter.unit_from &&
+                !units.find(u => u.id === converter.unit_from.id)
+            ) {
+                units.push(converter.unit_from);
+            }
+
+            // unit_to
+            if (
+                converter.unit_to &&
+                !units.find(u => u.id === converter.unit_to.id)
+            ) {
+                units.push(converter.unit_to);
+            }
+        });
+    }
+
+    return units;
 });
 
-// Watch selected product to update available units and set default unit
 const handleProductChange = (productId: number | null) => {
     selectedProductId.value = productId;
     productQuantity.value = 1;
     productUnitId.value = null;
-    
+
     if (productId) {
-        const selectedProduct = props.products.find(p => p.id === productId);
-        if (selectedProduct && selectedProduct.productUnitConverters.length > 0) {
-            // Set default unit to base unit (or first unit in converters)
-            // Check if product has base unit (from MProduct model) or use first converter unit
-            if (selectedProduct.baseUnit) {
-                productUnitId.value = selectedProduct.baseUnit.id;
-            } else {
-                productUnitId.value = selectedProduct.productUnitConverters[0].unit_id;
+        const selectedProduct = props.products.find(
+            p => p.id === productId
+        );
+
+        if (selectedProduct) {
+
+            // Set default unit ke base unit
+            if (selectedProduct.base_unit) {
+                productUnitId.value = selectedProduct.base_unit.id;
+
+            } else if (
+                selectedProduct.product_unit_converters &&
+                selectedProduct.product_unit_converters.length > 0
+            ) {
+
+                // fallback ke converter pertama
+                if (selectedProduct.product_unit_converters[0].unit_from) {
+                    productUnitId.value =
+                        selectedProduct.product_unit_converters[0]
+                            .unit_from.id;
+
+                } else if (
+                    selectedProduct.product_unit_converters[0].unit_to
+                ) {
+                    productUnitId.value =
+                        selectedProduct.product_unit_converters[0]
+                            .unit_to.id;
+                }
             }
         }
     }
@@ -178,8 +229,8 @@ const handleSubmit = () => {
                             @change="handleProductChange(selectedProductId)"
                             class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                            <option value="" disabled selected>-- Pilih Produk --</option>
-                            <option v-for="product in products" :key="product.id" :value="product.id">
+                            <option :value="null" disabled>-- Pilih Produk --</option>
+                            <option v-for="product in props.products" :key="product.id" :value="product.id">
                                 {{ product.name }}
                             </option>
                         </select>
@@ -205,7 +256,7 @@ const handleSubmit = () => {
                             class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             :disabled="!selectedProductId"
                         >
-                            <option value="" disabled selected>-- Pilih Satuan --</option>
+                            <option :value="null" disabled>-- Pilih Satuan --</option>
                             <option v-for="unit in availableUnits" :key="unit.id" :value="unit.id">
                                 {{ unit.name }}
                             </option>
