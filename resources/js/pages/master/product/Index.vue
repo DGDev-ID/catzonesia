@@ -26,7 +26,7 @@ const headers = [
 
 const handleDelete = (id: number) => {
     if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
-        router.delete(`/api/products/${id}`);
+        router.delete(route('master.product.destroy', id));
     }
 };
 </script>
@@ -42,7 +42,7 @@ const handleDelete = (id: number) => {
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <Heading variant="small" title="Master Product" description="Kelola daftar produk, stok, dan harga." />
                     <Link
-                        href="/products/create"
+                        :href="route('master.product.create')"
                         class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
                     >
                         Tambah Product
