@@ -7,6 +7,8 @@ type TableHeader = {
     key: string;
     label: string;
     class?: string;
+    suffix?: string;
+    suffixKey?: string;
 };
 
 type PaginatorLink = {
@@ -142,6 +144,16 @@ const getCellValue = (item: Record<string, any> | null | undefined, key: string)
 
     return value;
 };
+
+const getCellDisplayValue = (item: Record<string, any> | null | undefined, header: TableHeader) => {
+    const raw = getCellValue(item, header.key);
+    if (raw === '') return '';
+
+    const suffixFromKey = header.suffixKey ? getCellValue(item, header.suffixKey) : '';
+    const suffix = header.suffix ?? (typeof suffixFromKey === 'string' ? suffixFromKey : suffixFromKey !== '' ? String(suffixFromKey) : '');
+
+    return suffix ? `${String(raw)} ${suffix}` : raw;
+};
 </script>
 
 <template>
@@ -167,7 +179,7 @@ const getCellValue = (item: Record<string, any> | null | undefined, key: string)
                         <td v-for="header in headers" :key="header.key" class="px-6 py-4 align-top">
                             <slot :name="`cell-${header.key}`" :item="item">
                                 <template v-if="header.key === 'id'">{{ getRowNumber(rowIndex) }}</template>
-                                <template v-else>{{ getCellValue(item, header.key) }}</template>
+                                <template v-else>{{ getCellDisplayValue(item, header) }}</template>
                             </slot>
                         </td>
                     </tr>

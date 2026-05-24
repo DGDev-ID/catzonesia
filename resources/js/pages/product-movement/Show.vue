@@ -25,10 +25,10 @@ const note = ref('');
 const headers = [
     { key: 'id', label: 'No' },
     { key: 'type', label: 'Tipe' },
-    { key: 'opening_stock', label: 'Stok Awal' },
+    { key: 'opening_stock', label: 'Stok Awal', suffix: props.product?.base_unit?.name ?? '' },
     { key: 'quantity', label: 'Jumlah' },
     { key: 'unit.name', label: 'Satuan' },
-    { key: 'closing_stock', label: 'Stok Akhir' },
+    { key: 'closing_stock', label: 'Stok Akhir', suffix: props.product?.base_unit?.name ?? '' },
     { key: 'price', label: 'Harga' },
     { key: 'created_at', label: 'Tanggal' },
     { key: 'note', label: 'Catatan' },

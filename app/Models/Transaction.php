@@ -10,7 +10,30 @@ class Transaction extends Model
     use HasFactory;
 
     protected $table = 'transactions';
-    protected $fillable = ['cust_email', 'price', 'fee', 'total_price', 'status', 'profit_margin'];
+    protected $fillable = ['unique_id', 'cust_email', 'price', 'fee', 'total_price', 'status', 'profit_margin'];
+
+    protected static function booted()
+    {
+        static::creating(function ($transaction) {
+
+            if ($transaction->unique_id) {
+                return;
+            }
+
+            do {
+                $uniqueId =
+                    'TRX-' .
+                    now()->format('Ymd') .
+                    '-' .
+                    strtoupper(substr(uniqid(), -6));
+
+            } while (
+                self::where('unique_id', $uniqueId)->exists()
+            );
+
+            $transaction->unique_id = $uniqueId;
+        });
+    }
 
     // Relationships
     public function productMovements()

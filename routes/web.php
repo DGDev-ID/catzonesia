@@ -30,12 +30,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('product-movement', ProductMovementController::class)->except(['create', 'edit']);
     Route::post('product-movement/{product}/adjustment', [ProductMovementController::class, 'adjustment'])->name('product-movement.adjustment');
 
+    Route::get('transaction/export', [TransactionController::class, 'export'])->name('transaction.export');
     Route::resource('transaction', TransactionController::class)->except(['edit']);
     Route::post('transaction/{id}/success', [TransactionController::class, 'markAsSuccess'])->name('transaction.markAsSuccess');
     Route::post('transaction/{id}/failed', [TransactionController::class, 'markAsFailed'])->name('transaction.markAsFailed');
-    Route::get('transaction/export', [TransactionController::class, 'export'])->name('transaction.export');
 
     Route::resource('cashier', CashierController::class)->only(['index']);
+    Route::get('cashier/transaction/{transaction}', [CashierController::class, 'showTransaction'])->name('cashier.transaction.show');
     Route::post('cashier/checkout', [CashierController::class, 'checkout'])->name('cashier.checkout');
     Route::post('cashier/{id}/success', [CashierController::class, 'markAsSuccess'])->name('cashier.markAsSuccess');
     Route::post('cashier/{id}/failed', [CashierController::class, 'markAsFailed'])->name('cashier.markAsFailed');
