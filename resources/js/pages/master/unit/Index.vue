@@ -23,7 +23,7 @@ const headers = [
 
 const deleteUnit = (id: number) => {
     if (confirm('Apakah Anda yakin ingin menghapus unit ini?')) {
-        router.delete(`/api/master/unit/${id}`);
+        router.delete(route('master.unit.destroy', id));
     }
 };
 </script>
@@ -38,7 +38,7 @@ const deleteUnit = (id: number) => {
                 <!-- Header -->
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <Heading variant="small" title="Master Unit" description="Kelola daftar unit pengukuran produk." />
-                    <Link href="/master/unit/create"
+                    <Link :href="route('master.unit.create')"
                         class="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90">
                         Tambah Unit
                     </Link>

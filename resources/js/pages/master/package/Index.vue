@@ -26,7 +26,7 @@ const headers = [
 
 const deletePackage = (id: number) => {
     if (confirm('Apakah Anda yakin ingin menghapus paket ini?')) {
-        router.delete(`/api/master/package/${id}`);
+        router.delete(route('master.package.destroy', id));
     }
 };
 </script>
