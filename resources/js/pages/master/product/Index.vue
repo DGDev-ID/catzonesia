@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import Heading from '@/components/Heading.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Pencil, Trash2 } from 'lucide-vue-next';
+import { Pencil, Trash2, TrendingUp } from 'lucide-vue-next';
 
 const props = defineProps<{
     products: any;
@@ -54,6 +54,13 @@ const handleDelete = (id: number) => {
                     <PaginatedTable :headers="headers" :paginator="products">
                         <template #cell-actions="{ item }">
                             <div class="flex justify-start items-center gap-3">
+                                <Link
+                                    :href="route('product-movement.show', item.id)"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white transition"
+                                    title="Product Movement"
+                                >
+                                    <TrendingUp :size="16" />
+                                </Link>
                                 <Link
                                     :href="route('master.product.edit', item.id)"
                                     class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-yellow-100 text-yellow-600 hover:bg-yellow-500 hover:text-white transition"
