@@ -17,7 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const submit = (data: any) => {
-    router.post('/master/package', data, { preserveScroll: true });
+    router.post('/master/package', data, { preserveScroll: true, forceFormData: true });
 };
 </script>
 

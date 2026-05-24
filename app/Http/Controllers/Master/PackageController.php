@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\S3Helper;
 use App\Models\MPackage;
 use App\Models\MProduct;
 use App\Models\MPackage as Package;
@@ -46,6 +47,7 @@ class PackageController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'image' => 'nullable|image|max:5120',
             'price' => 'required|numeric|min:0',
             'is_grooming' => 'required|boolean',
             'description' => 'nullable|string',
@@ -61,6 +63,17 @@ class PackageController extends Controller
             'is_grooming' => $validated['is_grooming'],
             'description' => $validated['description'],
         ]);
+
+        if ($request->hasFile('image')) {
+            $tempFileName = S3Helper::storeFileTemp($request->file('image'));
+            try {
+                S3Helper::storeFileToS3('packages', $tempFileName);
+                $package->img_url = S3Helper::getUrlFileS3('packages', $tempFileName);
+                $package->save();
+            } finally {
+                S3Helper::removeFileTemp($tempFileName);
+            }
+        }
 
         if (!empty($validated['products'])) {
             foreach ($validated['products'] as $productData) {
@@ -96,6 +109,7 @@ class PackageController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'image' => 'nullable|image|max:5120',
             'price' => 'required|numeric|min:0',
             'is_grooming' => 'required|boolean',
             'description' => 'nullable|string',
@@ -111,6 +125,17 @@ class PackageController extends Controller
             'is_grooming' => $validated['is_grooming'],
             'description' => $validated['description'],
         ]);
+
+        if ($request->hasFile('image')) {
+            $tempFileName = S3Helper::storeFileTemp($request->file('image'));
+            try {
+                S3Helper::storeFileToS3('packages', $tempFileName);
+                $package->img_url = S3Helper::getUrlFileS3('packages', $tempFileName);
+                $package->save();
+            } finally {
+                S3Helper::removeFileTemp($tempFileName);
+            }
+        }
 
         $package->products()->detach();
         if (!empty($validated['products'])) {

@@ -18,7 +18,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const submit = (data: any) => {
-    router.put(`/master/product/${props.product.id}`, data, { preserveScroll: true });
+    const payload: any = {
+        ...data,
+        unit_converters: data.unitConverters,
+        _method: 'put',
+    };
+    delete payload.unitConverters;
+
+    router.post(`/master/product/${props.product.id}`, payload, { preserveScroll: true, forceFormData: true });
 };
 </script>
 
@@ -46,6 +53,7 @@ const submit = (data: any) => {
                         stock: product.stock,
                         base_unit_id: product.base_unit_id,
                         description: product.description,
+                            img_url: product.img_url,
                         is_display: product.is_display,
                         categories: product.categories.map((c: any) => c.id),
                         unitConverters: product.product_unit_converters.map((conv: any) => ({ 

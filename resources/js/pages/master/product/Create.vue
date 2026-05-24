@@ -17,7 +17,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const submit = (data: any) => {
-    router.post('/master/product', data, { preserveScroll: true });
+    const payload: any = {
+        ...data,
+        unit_converters: data.unitConverters,
+    };
+    delete payload.unitConverters;
+
+    router.post('/master/product', payload, { preserveScroll: true, forceFormData: true });
 };
 </script>
 

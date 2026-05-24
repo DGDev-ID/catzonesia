@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { onBeforeUnmount, ref, computed, watch } from 'vue';
 
 interface PackageProduct {
     product_id: number;
@@ -13,11 +13,14 @@ interface PackageFormData {
     price: number;
     is_grooming: boolean;
     description: string;
+    image: File | null;
     products: PackageProduct[];
 }
 
+type PackageFormInitialData = Partial<PackageFormData> & { img_url?: string | null };
+
 const props = withDefaults(defineProps<{
-    initialData?: Partial<PackageFormData>;
+    initialData?: PackageFormInitialData;
     submitLabel?: string;
     backUrl?: string;
     products?: any[];
@@ -38,12 +41,45 @@ const form = ref<PackageFormData>({
     price: props.initialData?.price ?? 0,
     is_grooming: props.initialData?.is_grooming ?? false,
     description: props.initialData?.description ?? '',
+    image: null,
     products: props.initialData?.products ?? [],
 });
 
 const selectedProductId = ref<number | null>(null);
 const productQuantity = ref(1);
 const productUnitId = ref<number | null>(null);
+
+const handleImageChange = (event: Event) => {
+    const target = event.target as HTMLInputElement | null;
+    form.value.image = target?.files?.[0] ?? null;
+};
+
+const previewUrl = ref<string | null>(props.initialData?.img_url ?? null);
+let objectUrl: string | null = null;
+
+watch(
+    () => form.value.image,
+    (file) => {
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            objectUrl = null;
+        }
+
+        if (file) {
+            objectUrl = URL.createObjectURL(file);
+            previewUrl.value = objectUrl;
+            return;
+        }
+
+        previewUrl.value = props.initialData?.img_url ?? null;
+    },
+);
+
+onBeforeUnmount(() => {
+    if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+    }
+});
 
 // Computed property to get available units for selected product
 const availableUnits = computed(() => {
@@ -205,6 +241,23 @@ const handleSubmit = () => {
                 ></textarea>
             </div>
 
+            <div>
+                <label for="pkg-image" class="mb-2 block text-sm font-medium">Gambar Paket</label>
+                <input
+                    id="pkg-image"
+                    type="file"
+                    accept="image/*"
+                    @change="handleImageChange"
+                    class="flex h-10 w-full rounded-xl bg-background px-3 py-2 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-muted file:px-4 file:py-2 file:text-sm file:font-medium hover:file:bg-muted/80"
+                />
+            </div>
+
+            <div v-if="previewUrl">
+                <div class="overflow-hidden rounded-xl border bg-muted/30">
+                    <img :src="previewUrl" alt="Preview Gambar Paket" class="h-48 w-full object-contain bg-background" />
+                </div>
+            </div>
+
             <div class="flex items-center gap-3">
                 <input
                     id="pkg-grooming"
@@ -216,7 +269,7 @@ const handleSubmit = () => {
             </div>
 
             <!-- Product Selection -->
-            <div v-if="!form.is_grooming" class="border-t pt-6">
+            <div class="border-t pt-6">
                 <h3 class="mb-4 text-base font-semibold">Produk dalam Paket</h3>
 
                 <!-- Add Product Form -->

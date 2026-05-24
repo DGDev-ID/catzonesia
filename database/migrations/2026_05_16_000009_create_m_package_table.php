@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('price', 10, 2);
+            $table->text('img_url')->nullable();
             $table->boolean('is_grooming')->default(false);
             $table->text('description')->nullable();
             $table->timestamps();

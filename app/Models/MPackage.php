@@ -10,7 +10,7 @@ class MPackage extends Model
     use HasFactory;
 
     protected $table = 'm_package';
-    protected $fillable = ['name', 'price', 'is_grooming', 'description'];
+    protected $fillable = ['name', 'img_url', 'price', 'is_grooming', 'description'];
 
     // Relationships
     public function packageProducts()

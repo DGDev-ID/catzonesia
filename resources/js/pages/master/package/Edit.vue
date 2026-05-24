@@ -18,7 +18,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const submit = (data: any) => {
-    router.put(`/master/package/${props.package.id}`, data, { preserveScroll: true });
+    router.post(
+        `/master/package/${props.package.id}`,
+        {
+            ...data,
+            _method: 'put',
+        },
+        { preserveScroll: true, forceFormData: true },
+    );
 };
 </script>
 
@@ -44,6 +51,7 @@ const submit = (data: any) => {
                         price: package.price,
                         is_grooming: package.is_grooming,
                         description: package.description,
+                        img_url: package.img_url,
                         products: package.products.map((p: any) => ({
                             product_id: p.id,
                             quantity: p.pivot.quantity,

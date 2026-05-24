@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
 
 interface UnitConverter {
     unit_from_id: string | number;
@@ -15,15 +15,18 @@ interface ProductFormData {
     stock: string | number;
     base_unit_id: string | number;
     description: string;
+    image: File | null;
     is_display: boolean;
     categories: number[];
     unitConverters: UnitConverter[];
 }
 
+type ProductFormInitialData = Partial<ProductFormData> & { img_url?: string | null };
+
 const props = withDefaults(defineProps<{
     categories: any[];
     units: any[];
-    initialData?: Partial<ProductFormData>;
+    initialData?: ProductFormInitialData;
     submitLabel?: string;
     backUrl?: string;
 }>(), {
@@ -42,9 +45,42 @@ const form = ref<ProductFormData>({
     stock: props.initialData?.stock ?? '',
     base_unit_id: props.initialData?.base_unit_id ?? '',
     description: props.initialData?.description ?? '',
+    image: null,
     is_display: props.initialData?.is_display ?? true,
     categories: props.initialData?.categories ?? [],
     unitConverters: props.initialData?.unitConverters ?? [],
+});
+
+const handleImageChange = (event: Event) => {
+    const target = event.target as HTMLInputElement | null;
+    form.value.image = target?.files?.[0] ?? null;
+};
+
+const previewUrl = ref<string | null>(props.initialData?.img_url ?? null);
+let objectUrl: string | null = null;
+
+watch(
+    () => form.value.image,
+    (file) => {
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            objectUrl = null;
+        }
+
+        if (file) {
+            objectUrl = URL.createObjectURL(file);
+            previewUrl.value = objectUrl;
+            return;
+        }
+
+        previewUrl.value = props.initialData?.img_url ?? null;
+    },
+);
+
+onBeforeUnmount(() => {
+    if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+    }
 });
 
 const addUnitConverter = () => {
@@ -124,6 +160,23 @@ const handleSubmit = () => {
                         <option value="" disabled selected>Pilih unit</option>
                         <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
                     </select>
+                </div>
+
+                <div class="col-span-2">
+                    <label for="prod-image" class="mb-2 block text-sm font-medium">Gambar Produk</label>
+                    <input
+                        id="prod-image"
+                        type="file"
+                        accept="image/*"
+                        @change="handleImageChange"
+                        class="flex h-10 w-full rounded-xl bg-background px-3 py-2 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-muted file:px-4 file:py-2 file:text-sm file:font-medium hover:file:bg-muted/80"
+                    />
+                </div>
+
+                <div v-if="previewUrl" class="col-span-2">
+                    <div class="overflow-hidden rounded-xl border bg-muted/30">
+                        <img :src="previewUrl" alt="Preview Gambar Produk" class="h-48 w-full object-contain bg-background" />
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-3 pt-6">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\S3Helper;
 use App\Models\MCategory;
 use App\Models\MProduct;
 use App\Models\MUnit;
@@ -55,7 +56,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'stock_alert' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'img_url' => 'nullable|string',
+            'image' => 'nullable|image|max:5120',
             'is_display' => 'required|boolean',
             'categories' => 'required|array',
             'categories.*' => 'exists:m_categories,id',
@@ -66,6 +67,17 @@ class ProductController extends Controller
         ]);
 
         $product = MProduct::create($validated);
+
+        if ($request->hasFile('image')) {
+            $tempFileName = S3Helper::storeFileTemp($request->file('image'));
+            try {
+                S3Helper::storeFileToS3('products', $tempFileName);
+                $product->img_url = S3Helper::getUrlFileS3('products', $tempFileName);
+                $product->save();
+            } finally {
+                S3Helper::removeFileTemp($tempFileName);
+            }
+        }
 
         foreach ($validated['categories'] as $categoryId) {
             ProductCategory::create([
@@ -113,7 +125,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'stock_alert' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'img_url' => 'nullable|string',
+            'image' => 'nullable|image|max:5120',
             'is_display' => 'required|boolean',
             'categories' => 'required|array',
             'categories.*' => 'exists:m_categories,id',
@@ -124,6 +136,17 @@ class ProductController extends Controller
         ]);
 
         $product->update($validated);
+
+        if ($request->hasFile('image')) {
+            $tempFileName = S3Helper::storeFileTemp($request->file('image'));
+            try {
+                S3Helper::storeFileToS3('products', $tempFileName);
+                $product->img_url = S3Helper::getUrlFileS3('products', $tempFileName);
+                $product->save();
+            } finally {
+                S3Helper::removeFileTemp($tempFileName);
+            }
+        }
 
         $product->categories()->sync($validated['categories']);
 

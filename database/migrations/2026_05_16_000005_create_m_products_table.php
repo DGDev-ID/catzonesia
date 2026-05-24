@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('stock');
             $table->integer('stock_alert');
             $table->text('description')->nullable();
-            $table->string('img_url')->nullable();
+            $table->text('img_url')->nullable();
             $table->boolean('is_display')->default(true);
             $table->timestamps();
         });
