@@ -11,7 +11,7 @@ class PackageProduct extends Model
 
     protected $table = 'package_products';
     public $timestamps = false;
-    protected $fillable = ['package_id', 'product_id'];
+    protected $fillable = ['package_id', 'product_id', 'quantity', 'unit_id'];
 
     // Relationships
     public function package()
@@ -22,5 +22,10 @@ class PackageProduct extends Model
     public function product()
     {
         return $this->belongsTo(MProduct::class, 'product_id');
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(MUnit::class, 'unit_id');
     }
 }

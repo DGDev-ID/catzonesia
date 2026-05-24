@@ -5,6 +5,11 @@ import PackageForm from '@/components/custom/form/PackageForm.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 
+const props = defineProps<{
+    products: any[];
+    units: any[];
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Master', href: '/master' },
     { title: 'Package', href: '/master/package' },
@@ -30,7 +35,12 @@ const submit = (data: any) => {
                     </Link>
                 </div>
 
-                <PackageForm submit-label="Simpan Package" @submit="submit" />
+                <PackageForm
+                    :products="products"
+                    :units="units"
+                    submit-label="Simpan Package"
+                    @submit="submit"
+                />
 
             </div>
         </div>

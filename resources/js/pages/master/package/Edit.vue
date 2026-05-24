@@ -7,6 +7,8 @@ import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps<{
     package: any;
+    products: any[];
+    units: any[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -35,11 +37,18 @@ const submit = (data: any) => {
                 </div>
 
                 <PackageForm
+                    :products="products"
+                    :units="units"
                     :initial-data="{
                         name: package.name,
                         price: package.price,
                         is_grooming: package.is_grooming,
                         description: package.description,
+                        products: package.products.map((p: any) => ({
+                            product_id: p.id,
+                            quantity: p.pivot.quantity,
+                            unit_id: p.pivot.unit_id,
+                        })),
                     }"
                     submit-label="Update Package"
                     @submit="submit"

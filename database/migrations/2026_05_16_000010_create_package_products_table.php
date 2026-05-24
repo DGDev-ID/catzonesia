@@ -12,6 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('package_id')->constrained('m_package');
             $table->foreignId('product_id')->constrained('m_products');
+            $table->unsignedInteger('quantity')->default(0);
+            $table->foreignId('unit_id')->constrained('m_units');
+            $table->timestamps();
         });
     }
 

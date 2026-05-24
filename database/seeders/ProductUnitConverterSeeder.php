@@ -13,10 +13,10 @@ class ProductUnitConverterSeeder extends Seeder
     public function run(): void
     {
         $converters = [
-            ['product_id' => 1, 'unit_id' => 3, 'multiplier' => 0.001],
-            ['product_id' => 2, 'unit_id' => 3, 'multiplier' => 0.085],
-            ['product_id' => 3, 'unit_id' => 3, 'multiplier' => 10],
-            ['product_id' => 3, 'unit_id' => 2, 'multiplier' => 10000]
+            ['product_id' => 1, 'unit_from_id' => 1, 'unit_to_id' => 3, 'multiplier' => 0.001],
+            ['product_id' => 2, 'unit_from_id' => 2, 'unit_to_id' => 3, 'multiplier' => 0.085],
+            ['product_id' => 3, 'unit_from_id' => 1, 'unit_to_id' => 3, 'multiplier' => 10],
+            ['product_id' => 3, 'unit_from_id' => 1, 'unit_to_id' => 2, 'multiplier' => 10000]
         ];
 
         foreach ($converters as $converter) {

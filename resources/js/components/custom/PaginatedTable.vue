@@ -99,8 +99,20 @@ const getRowNumber = (rowIndex: number) => {
 
 const getCellValue = (item: Record<string, any> | null | undefined, key: string) => {
     if (!item) return '';
-    if (key in item) return item[key];
-    return '';
+
+    // Handle nested properties like "baseUnit.name"
+    const keys = key.split('.');
+    let value = item;
+
+    for (const k of keys) {
+        if (value && typeof value === 'object' && k in value) {
+            value = value[k];
+        } else {
+            return '';
+        }
+    }
+
+    return value;
 };
 </script>
 

@@ -11,7 +11,7 @@ class ProductUnitConverter extends Model
 
     protected $table = 'product_unit_converters';
     public $timestamps = false;
-    protected $fillable = ['product_id', 'unit_id', 'multiplier'];
+    protected $fillable = ['product_id', 'unit_from_id', 'unit_to_id', 'multiplier'];
 
     // Relationships
     public function product()
@@ -19,8 +19,13 @@ class ProductUnitConverter extends Model
         return $this->belongsTo(MProduct::class, 'product_id');
     }
 
-    public function unit()
+    public function unitFrom()
     {
-        return $this->belongsTo(MUnit::class, 'unit_id');
+        return $this->belongsTo(MUnit::class, 'unit_from_id');
+    }
+
+    public function unitTo()
+    {
+        return $this->belongsTo(MUnit::class, 'unit_to_id');
     }
 }

@@ -28,9 +28,11 @@ return new class extends Migration
         // product_unit_converters table
         Schema::table('product_unit_converters', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
-            $table->dropForeign(['unit_id']);
+            $table->dropForeign(['unit_from_id']);
+            $table->dropForeign(['unit_to_id']);
             $table->foreign('product_id')->references('id')->on('m_products')->onDelete('cascade');
-            $table->foreign('unit_id')->references('id')->on('m_units')->onDelete('cascade');
+            $table->foreign('unit_from_id')->references('id')->on('m_units')->onDelete('cascade');
+            $table->foreign('unit_to_id')->references('id')->on('m_units')->onDelete('cascade');
         });
 
         // product_movements table
@@ -47,8 +49,10 @@ return new class extends Migration
         Schema::table('package_products', function (Blueprint $table) {
             $table->dropForeign(['package_id']);
             $table->dropForeign(['product_id']);
+            $table->dropForeign(['unit_id']);
             $table->foreign('package_id')->references('id')->on('m_package')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('m_products')->onDelete('cascade');
+            $table->foreign('unit_id')->references('id')->on('m_units')->onDelete('cascade');
         });
 
         // transaction_details table
@@ -121,8 +125,10 @@ return new class extends Migration
         Schema::table('package_products', function (Blueprint $table) {
             $table->dropForeign(['package_id']);
             $table->dropForeign(['product_id']);
+            $table->dropForeign(['unit_id']);
             $table->foreign('package_id')->references('id')->on('m_package');
             $table->foreign('product_id')->references('id')->on('m_products');
+            $table->foreign('unit_id')->references('id')->on('m_units');
         });
 
         // product_movements table
@@ -138,9 +144,11 @@ return new class extends Migration
         // product_unit_converters table
         Schema::table('product_unit_converters', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
-            $table->dropForeign(['unit_id']);
+            $table->dropForeign(['unit_from_id']);
+            $table->dropForeign(['unit_to_id']);
             $table->foreign('product_id')->references('id')->on('m_products');
-            $table->foreign('unit_id')->references('id')->on('m_units');
+            $table->foreign('unit_from_id')->references('id')->on('m_units');
+            $table->foreign('unit_to_id')->references('id')->on('m_units');
         });
 
         // product_categories table

@@ -21,6 +21,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = MProduct::query()
+            ->with('baseUnit')
             ->when($request->query('search'), function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('sku', 'like', "%{$search}%");
@@ -59,7 +60,8 @@ class ProductController extends Controller
             'categories' => 'required|array',
             'categories.*' => 'exists:m_categories,id',
             'unit_converters' => 'nullable|array',
-            'unit_converters.*.unit_id' => 'required|exists:m_units,id',
+            'unit_converters.*.unit_from_id' => 'required|exists:m_units,id',
+            'unit_converters.*.unit_to_id' => 'required|exists:m_units,id',
             'unit_converters.*.multiplier' => 'required|numeric|min:0',
         ]);
 
@@ -76,7 +78,8 @@ class ProductController extends Controller
             foreach ($validated['unit_converters'] as $converter) {
                 ProductUnitConverter::create([
                     'product_id' => $product->id,
-                    'unit_id' => $converter['unit_id'],
+                    'unit_from_id' => $converter['unit_from_id'],
+                    'unit_to_id' => $converter['unit_to_id'],
                     'multiplier' => $converter['multiplier'],
                 ]);
             }
@@ -90,8 +93,8 @@ class ProductController extends Controller
     {
         $categories = MCategory::all();
         $units = MUnit::all();
-        $product->load('categories', 'productUnitConverters');
-
+        $product->load(['categories', 'productUnitConverters.unitFrom', 'productUnitConverters.unitTo']);
+        
         return Inertia::render('master/product/Edit', [
             'product' => $product,
             'categories' => $categories,
@@ -115,7 +118,8 @@ class ProductController extends Controller
             'categories' => 'required|array',
             'categories.*' => 'exists:m_categories,id',
             'unit_converters' => 'nullable|array',
-            'unit_converters.*.unit_id' => 'required|exists:m_units,id',
+            'unit_converters.*.unit_from_id' => 'required|exists:m_units,id',
+            'unit_converters.*.unit_to_id' => 'required|exists:m_units,id',
             'unit_converters.*.multiplier' => 'required|numeric|min:0',
         ]);
 
@@ -128,7 +132,8 @@ class ProductController extends Controller
             foreach ($validated['unit_converters'] as $converter) {
                 ProductUnitConverter::create([
                     'product_id' => $product->id,
-                    'unit_id' => $converter['unit_id'],
+                    'unit_from_id' => $converter['unit_from_id'],
+                    'unit_to_id' => $converter['unit_to_id'],
                     'multiplier' => $converter['multiplier'],
                 ]);
             }

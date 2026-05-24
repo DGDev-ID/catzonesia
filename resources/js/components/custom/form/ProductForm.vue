@@ -3,7 +3,8 @@ import { Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
 interface UnitConverter {
-    unit_id: string | number;
+    unit_from_id: string | number;
+    unit_to_id: string | number;
     multiplier: string | number;
 }
 
@@ -46,12 +47,8 @@ const form = ref<ProductFormData>({
     unitConverters: props.initialData?.unitConverters ?? [],
 });
 
-const availableUnits = computed(() => {
-    return props.units.filter((unit: any) => unit.id !== Number(form.value.base_unit_id));
-});
-
 const addUnitConverter = () => {
-    form.value.unitConverters.push({ unit_id: '', multiplier: '' });
+    form.value.unitConverters.push({ unit_from_id: '', unit_to_id: '', multiplier: '' });
 };
 
 const removeUnitConverter = (index: number) => {
@@ -124,7 +121,7 @@ const handleSubmit = () => {
                         required
                         class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
-                        <option value="">Pilih unit</option>
+                        <option value="" disabled selected>Pilih unit</option>
                         <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
                     </select>
                 </div>
@@ -173,13 +170,24 @@ const handleSubmit = () => {
 
                     <div v-for="(converter, index) in form.unitConverters" :key="index" class="mb-3 flex gap-3">
                         <select
-                            v-model="converter.unit_id"
+                            v-model="converter.unit_from_id"
                             required
                             class="flex h-10 flex-1 rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
-                            <option value="">Pilih unit</option>
-                            <option v-for="unitOpt in availableUnits" :key="unitOpt.id" :value="unitOpt.id">
-                                {{ unitOpt.name }}
+                            <option value="" disabled selected>-- Unit From --</option>
+                            <option v-for="unit in units" :key="unit.id" :value="unit.id">
+                                {{ unit.name }}
+                            </option>
+                        </select>
+
+                        <select
+                            v-model="converter.unit_to_id"
+                            required
+                            class="flex h-10 flex-1 rounded-xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                            <option value="" disabled selected>-- Unit To --</option>
+                            <option v-for="unit in units" :key="unit.id" :value="unit.id">
+                                {{ unit.name }}
                             </option>
                         </select>
 

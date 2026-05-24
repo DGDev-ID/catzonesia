@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Models\MPackage;
 use App\Models\MProduct;
+use App\Models\MPackage as Package;
+use App\Models\MUnit;
 use App\Models\PackageProduct;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -31,10 +33,12 @@ class PackageController extends Controller
 
     public function create()
     {
-        $products = MProduct::all();
+        $products = MProduct::with('baseUnit', 'productUnitConverters.unitFrom', 'productUnitConverters.unitTo')->get();
+        $units = MUnit::all();
 
         return Inertia::render('master/package/Create', [
             'products' => $products,
+            'units' => $units,
         ]);
     }
 
@@ -45,17 +49,28 @@ class PackageController extends Controller
             'price' => 'required|numeric|min:0',
             'is_grooming' => 'required|boolean',
             'description' => 'nullable|string',
-            'products' => 'required|array',
-            'products.*' => 'exists:m_products,id',
+            'products' => 'required_if:is_grooming,false|array',
+            'products.*.product_id' => 'required|exists:m_products,id',
+            'products.*.quantity' => 'required|numeric|min:1',
+            'products.*.unit_id' => 'required|exists:m_units,id',
         ]);
 
-        $package = MPackage::create($validated);
+        $package = MPackage::create([
+            'name' => $validated['name'],
+            'price' => $validated['price'],
+            'is_grooming' => $validated['is_grooming'],
+            'description' => $validated['description'],
+        ]);
 
-        foreach ($validated['products'] as $productId) {
-            PackageProduct::create([
-                'package_id' => $package->id,
-                'product_id' => $productId,
-            ]);
+        if (!empty($validated['products'])) {
+            foreach ($validated['products'] as $productData) {
+                PackageProduct::create([
+                    'package_id' => $package->id,
+                    'product_id' => $productData['product_id'],
+                    'quantity' => $productData['quantity'],
+                    'unit_id' => $productData['unit_id'],
+                ]);
+            }
         }
 
         toast('Paket berhasil ditambahkan');
@@ -64,12 +79,16 @@ class PackageController extends Controller
 
     public function edit(MPackage $package)
     {
-        $products = MProduct::all();
-        $package->load('products');
+        $products = MProduct::with('baseUnit', 'productUnitConverters.unitFrom', 'productUnitConverters.unitTo')->get();
+        $units = MUnit::all();
+        $package->load(['products' => function ($query) {
+            $query->withPivot('quantity', 'unit_id');
+        }]);
 
         return Inertia::render('master/package/Edit', [
             'package' => $package,
             'products' => $products,
+            'units' => $units,
         ]);
     }
 
@@ -80,13 +99,31 @@ class PackageController extends Controller
             'price' => 'required|numeric|min:0',
             'is_grooming' => 'required|boolean',
             'description' => 'nullable|string',
-            'products' => 'required|array',
-            'products.*' => 'exists:m_products,id',
+            'products' => 'required_if:is_grooming,false|array',
+            'products.*.product_id' => 'required|exists:m_products,id',
+            'products.*.quantity' => 'required|numeric|min:1',
+            'products.*.unit_id' => 'required|exists:m_units,id',
         ]);
 
-        $package->update($validated);
+        $package->update([
+            'name' => $validated['name'],
+            'price' => $validated['price'],
+            'is_grooming' => $validated['is_grooming'],
+            'description' => $validated['description'],
+        ]);
 
-        $package->products()->sync($validated['products']);
+        $package->products()->detach();
+        if (!empty($validated['products'])) {
+            foreach ($validated['products'] as $productData) {
+                PackageProduct::create([
+                    'package_id' => $package->id,
+                    'product_id' => $productData['product_id'],
+                    'quantity' => $productData['quantity'],
+                    'unit_id' => $productData['unit_id'],
+                ]);
+            }
+        }
+
         toast('Paket berhasil diupdate');
         return redirect()->route('master.package.index');
     }

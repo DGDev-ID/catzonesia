@@ -48,7 +48,11 @@ const submit = (data: any) => {
                         description: product.description,
                         is_display: product.is_display,
                         categories: product.categories.map((c: any) => c.id),
-                        unitConverters: product.product_unit_converters.map((conv: any) => ({ unit_id: conv.unit_id, multiplier: conv.multiplier })),
+                        unitConverters: product.product_unit_converters.map((conv: any) => ({ 
+                            unit_from_id: conv.unit_from_id, 
+                            unit_to_id: conv.unit_to_id, 
+                            multiplier: conv.multiplier 
+                        })),
                     }"
                     submit-label="Update Product"
                     back-url="/master/product"

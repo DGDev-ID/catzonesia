@@ -18,6 +18,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const headers = [
     { key: 'id', label: 'No' },
     { key: 'name', label: 'Nama Produk' },
+    { key: 'base_unit.name', label: 'Satuan Dasar' },
     { key: 'sku', label: 'SKU' },
     { key: 'price', label: 'Harga' },
     { key: 'stock', label: 'Stok' },
