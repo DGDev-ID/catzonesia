@@ -5,6 +5,7 @@ import Heading from '@/components/Heading.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { formatCurrency } from '@/lib/utils';
 
 const props = defineProps<{
     product: any;
@@ -29,7 +30,7 @@ const headers = [
     { key: 'quantity', label: 'Jumlah' },
     { key: 'unit.name', label: 'Satuan' },
     { key: 'closing_stock', label: 'Stok Akhir', suffix: props.product?.base_unit?.name ?? '' },
-    { key: 'price', label: 'Harga' },
+    { key: 'price', label: 'Harga', formatter: formatCurrency },
     { key: 'created_at', label: 'Tanggal' },
     { key: 'note', label: 'Catatan' },
 ];

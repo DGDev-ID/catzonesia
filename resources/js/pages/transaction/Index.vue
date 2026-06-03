@@ -6,6 +6,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Eye, Download } from 'lucide-vue-next';
+import { formatCurrency } from '@/lib/utils';
 
 const props = defineProps<{
     transactions: any;
@@ -25,9 +26,9 @@ const dateTo = ref(props.filters?.date_to ?? '');
 const headers = [
     { key: 'id', label: 'No' },
     { key: 'cust_email', label: 'Email Customer' },
-    { key: 'price', label: 'Harga' },
-    { key: 'fee', label: 'Fee' },
-    { key: 'total_price', label: 'Total' },
+    { key: 'price', label: 'Harga', formatter: formatCurrency },
+    { key: 'fee', label: 'Fee', formatter: formatCurrency },
+    { key: 'total_price', label: 'Total', formatter: formatCurrency },
     { key: 'created_at', label: 'Tanggal' },
     { key: 'actions', label: 'Aksi' },
 ];

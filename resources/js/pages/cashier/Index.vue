@@ -22,6 +22,7 @@
         ShoppingCart,
         X
     } from 'lucide-vue-next';
+    import { formatCurrency } from '@/lib/utils';
 
     type CatalogItem = {
         id: number;
@@ -86,11 +87,7 @@
     const totalPrice = computed(() => cartItems.value.reduce((total, item) => total + Number(item.price) * Number(item
         .quantity), 0));
 
-    const formattedIdr = (value: number) =>
-        Number(value ?? 0).toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-        });
+    const formattedIdr = formatCurrency;
 
     const hasGroomingPackage = computed(() => cartItems.value.some((item) => item.type === 'package' && Boolean(item
         .is_grooming)));

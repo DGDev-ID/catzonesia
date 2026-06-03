@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { AlertTriangle, BadgeDollarSign, BarChart3, Box, CheckCircle2, Clock, TrendingUp, Users, XCircle } from 'lucide-vue-next';
+import { formatCurrency } from '@/lib/utils';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
 
@@ -34,9 +35,6 @@ const props = defineProps<{
         base_unit?: { name: string };
     }[];
 }>();
-
-const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
 
 const formatDate = (date: string) =>
     new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(date));

@@ -9,6 +9,7 @@ type TableHeader = {
     class?: string;
     suffix?: string;
     suffixKey?: string;
+    formatter?: (value: any) => string;
 };
 
 type PaginatorLink = {
@@ -148,6 +149,10 @@ const getCellValue = (item: Record<string, any> | null | undefined, key: string)
 const getCellDisplayValue = (item: Record<string, any> | null | undefined, header: TableHeader) => {
     const raw = getCellValue(item, header.key);
     if (raw === '') return '';
+
+    if (header.formatter) {
+        return header.formatter(raw);
+    }
 
     const suffixFromKey = header.suffixKey ? getCellValue(item, header.suffixKey) : '';
     const suffix = header.suffix ?? (typeof suffixFromKey === 'string' ? suffixFromKey : suffixFromKey !== '' ? String(suffixFromKey) : '');

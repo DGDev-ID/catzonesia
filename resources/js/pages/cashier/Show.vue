@@ -4,6 +4,7 @@ import Heading from '@/components/Heading.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Check, X } from 'lucide-vue-next';
+import { formatCurrency } from '@/lib/utils';
 
 const props = defineProps<{
     transaction: any;
@@ -73,15 +74,15 @@ const makeFailed = () => {
                         </div>
                         <div>
                             <p class="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">Total</p>
-                            <p class="text-sm font-medium">{{ props.transaction.total_price }}</p>
+                            <p class="text-sm font-medium">{{ formatCurrency(props.transaction.total_price) }}</p>
                         </div>
                         <div>
                             <p class="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">Fee</p>
-                            <p class="text-sm font-medium">{{ props.transaction.fee }}</p>
+                            <p class="text-sm font-medium">{{ formatCurrency(props.transaction.fee) }}</p>
                         </div>
                         <div>
                             <p class="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">Harga</p>
-                            <p class="text-sm font-medium">{{ props.transaction.price }}</p>
+                            <p class="text-sm font-medium">{{ formatCurrency(props.transaction.price) }}</p>
                         </div>
                         <div>
                             <p class="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">Status</p>
@@ -147,7 +148,7 @@ const makeFailed = () => {
                                 <td class="px-6 py-4 font-medium">{{ item.product?.name || item.package?.name }}</td>
                                 <td class="px-6 py-4">{{ item.amount }}</td>
                                 <td class="px-6 py-4">{{ item.unit?.name }}</td>
-                                <td class="px-6 py-4">{{ item.price }}</td>
+                                <td class="px-6 py-4">{{ formatCurrency(item.price) }}</td>
                                 <td class="px-6 py-4 text-muted-foreground">{{ item.notes }}</td>
                             </tr>
                             <tr v-if="!transaction.transaction_details?.length">
