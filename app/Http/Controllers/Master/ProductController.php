@@ -48,13 +48,10 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'base_unit_id' => 'required|exists:m_units,id',
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:m_products,sku',
-            'price' => 'required|numeric|min:0',
-            'avg_inbound_price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
             'stock_alert' => 'required|integer|min:0',
+            'base_unit_id' => 'required|exists:m_units,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:5120',
             'is_display' => 'required|boolean',
@@ -117,13 +114,10 @@ class ProductController extends Controller
     public function update(Request $request, MProduct $product)
     {
         $validated = $request->validate([
-            'base_unit_id' => 'required|exists:m_units,id',
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:m_products,sku,' . $product->id,
-            'price' => 'required|numeric|min:0',
-            'avg_inbound_price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
             'stock_alert' => 'required|integer|min:0',
+            'base_unit_id' => 'required|exists:m_units,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:5120',
             'is_display' => 'required|boolean',

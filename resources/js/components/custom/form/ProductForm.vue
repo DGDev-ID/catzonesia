@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
 
 interface UnitConverter {
@@ -11,8 +10,7 @@ interface UnitConverter {
 interface ProductFormData {
     name: string;
     sku: string;
-    price: string | number;
-    stock: string | number;
+    stock_alert: number;
     base_unit_id: string | number;
     description: string;
     image: File | null;
@@ -41,8 +39,7 @@ const emit = defineEmits<{
 const form = ref<ProductFormData>({
     name: props.initialData?.name ?? '',
     sku: props.initialData?.sku ?? '',
-    price: props.initialData?.price ?? '',
-    stock: props.initialData?.stock ?? '',
+    stock_alert: props.initialData?.stock_alert ?? 0,
     base_unit_id: props.initialData?.base_unit_id ?? '',
     description: props.initialData?.description ?? '',
     image: null,
@@ -125,31 +122,6 @@ const handleSubmit = () => {
                 </div>
 
                 <div>
-                    <label for="prod-price" class="mb-2 block text-sm font-medium">Harga</label>
-                    <input
-                        id="prod-price"
-                        v-model="form.price"
-                        type="number"
-                        step="0.01"
-                        required
-                        placeholder="Masukkan harga"
-                        class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    />
-                </div>
-
-                <div>
-                    <label for="prod-stock" class="mb-2 block text-sm font-medium">Stok</label>
-                    <input
-                        id="prod-stock"
-                        v-model="form.stock"
-                        type="number"
-                        required
-                        placeholder="Masukkan stok awal"
-                        class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    />
-                </div>
-
-                <div>
                     <label for="prod-base-unit" class="mb-2 block text-sm font-medium">Unit Dasar</label>
                     <select
                         id="prod-base-unit"
@@ -160,6 +132,18 @@ const handleSubmit = () => {
                         <option value="" disabled selected>Pilih unit</option>
                         <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
                     </select>
+                </div>
+
+                <div>
+                    <label for="prod-stock-alert" class="mb-2 block text-sm font-medium">Stok Alert</label>
+                    <input
+                        id="prod-stock-alert"
+                        v-model="form.stock_alert"
+                        type="number"
+                        required
+                        placeholder="Masukkan stok alert"
+                        class="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
                 </div>
 
                 <div class="col-span-2">
